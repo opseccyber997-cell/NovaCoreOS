@@ -30,7 +30,7 @@ extern void idt_load(struct idt_pointer *pointer);
 
 extern void irq0_stub(void);
 extern void irq1_stub(void);
-
+extern void isr6_stub(void);
 
 /*
  * Descobre automaticamente qual segmento de código
@@ -177,19 +177,23 @@ void interrupts_init(void)
     interrupts_disable();
 
     idt_clear();
-
     pic_remap();
 
     unsigned short code_segment =
         get_code_segment();
 
+    /*
+     * Excecao 6 - Invalid Opcode
+     */
+    idt_set_gate(
+        6,
+        (unsigned int)isr6_stub,
+        code_segment,
+        0x8E
+    );
 
     /*
-     * IRQ0
-     *
-     * Timer
-     *
-     * PIC IRQ0 -> IDT 32
+     * IRQ0 - Timer
      */
     idt_set_gate(
         32,
@@ -198,13 +202,8 @@ void interrupts_init(void)
         0x8E
     );
 
-
     /*
-     * IRQ1
-     *
-     * Teclado
-     *
-     * PIC IRQ1 -> IDT 33
+     * IRQ1 - Teclado
      */
     idt_set_gate(
         33,
@@ -213,13 +212,11 @@ void interrupts_init(void)
         0x8E
     );
 
-
     idt_ptr.limit =
         (unsigned short)(sizeof(idt) - 1);
 
     idt_ptr.base =
         (unsigned int)&idt;
-
 
     idt_load(&idt_ptr);
 }

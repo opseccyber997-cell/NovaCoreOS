@@ -2,6 +2,7 @@
 #include "print.h"
 #include "io.h"
 #include "timer.h"
+#include "memory.h"
 
 static int strings_equal(const char *first, const char *second)
 {
@@ -137,7 +138,6 @@ void shell_start(void)
     set_color(15, 0);
     print("-------------------------\n");
     print("Digite 'help' para ver os comandos.\n\n");
-
     shell_print_prompt();
 }
 
@@ -161,10 +161,24 @@ void shell_execute(const char *command)
         print("  echo TEXTO     - escreve uma mensagem\n");
         print("  color COR      - altera a cor do texto\n");
         print("  reboot         - reinicia o sistema\n");
-        print("  uptime        - mostra o tempo ligado\n");
-	print("  shutdown       - desliga o QEMU\n");
+        print("  uptime         - mostra o tempo ligado\n");
+        print("  shutdown       - desliga o QEMU\n");
+        print("  crashtest      - testa o Kernel Panic\n");
+        print("  meminfo        - mostra informacoes da memoria\n");
+	print("  memmap         - mostra o mapa da memoria\n");
         return;
     }
+
+    if (strings_equal(command, "crashtest"))
+    {
+        print("Testando Kernel Panic...\n");
+
+        __asm__ volatile ("ud2");
+
+        return;
+    }
+
+    /* O RESTO DOS SEUS COMANDOS CONTINUA AQUI */
 
     if (strings_equal(command, "clear"))
     {
@@ -243,6 +257,18 @@ void shell_execute(const char *command)
     print_uint(seconds);
     print(" segundos.\n");
 
+    return;
+}
+
+if (strings_equal(command, "meminfo"))
+{
+    memory_print_info();
+    return;
+}
+
+if (strings_equal(command, "memmap"))
+{
+    memory_print_map();
     return;
 }
 

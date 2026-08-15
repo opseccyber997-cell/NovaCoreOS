@@ -200,3 +200,18 @@ void print_uint(unsigned int number)
         print_char(buffer[index]);
     }
 }
+
+void print_hex(unsigned int number)
+{
+    const char *digits = "0123456789ABCDEF";
+
+    print("0x");
+
+    for (int shift = 28; shift >= 0; shift -= 4)
+    {
+        unsigned int digit =
+            (number >> shift) & 0xF;
+
+        print_char(digits[digit]);
+    }
+}

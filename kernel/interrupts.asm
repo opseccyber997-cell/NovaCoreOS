@@ -3,10 +3,11 @@ section .text
 global idt_load
 global irq0_stub
 global irq1_stub
+global isr6_stub
 
 extern timer_ticks
 extern keyboard_handler
-
+extern invalid_opcode_handler
 
 idt_load:
     mov eax, [esp + 4]
@@ -65,5 +66,21 @@ irq1_stub:
     ; Volta para onde a CPU estava
     iretd
 
+; =====================================================
+; EXCECAO 6 - INVALID OPCODE
+; =====================================================
+
+isr6_stub:
+    cli
+    cld
+
+    ; Alinha a pilha para chamar codigo C.
+    and esp, 0xFFFFFFF0
+
+    call invalid_opcode_handler
+
+.hang:
+    hlt
+    jmp .hang
 
 section .note.GNU-stack noalloc noexec nowrite progbits

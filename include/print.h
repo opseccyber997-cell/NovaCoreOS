@@ -12,5 +12,6 @@ void disable_cursor(void);
 void update_cursor(void);
 
 void print_uint(unsigned int number);
+void print_hex(unsigned int number);
 
 #endif

@@ -2,40 +2,34 @@
 #include "shell.h"
 #include "interrupts.h"
 #include "timer.h"
+#include "memory.h"
 
-void kernel_main(void)
+void kernel_main(
+    unsigned int multiboot_magic,
+    unsigned int multiboot_info_address
+)
 {
     enable_cursor();
 
     /*
-     * Configura IDT + PIC.
+     * Descobre a memoria antes de começarmos
+     * a criar nosso gerenciador.
      */
+    memory_init(
+        multiboot_magic,
+        multiboot_info_address
+    );
+
     interrupts_init();
 
-    /*
-     * Timer em aproximadamente 100 Hz.
-     */
     timer_init(100);
 
-    /*
-     * Inicia nosso shell.
-     */
     shell_start();
 
-    /*
-     * A partir daqui IRQ0 e IRQ1 podem chegar.
-     */
     interrupts_enable();
 
-
-    /*
-     * Não precisamos mais de keyboard_loop().
-     *
-     * A CPU fica esperando interrupções.
-     */
     while (1)
     {
         __asm__ volatile ("hlt");
     }
 }
-
