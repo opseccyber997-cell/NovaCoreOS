@@ -1,0 +1,15 @@
+# Arquivos gerados pela compilação (o "make" recria tudo isso)
+*.o
+*.bin
+*.iso
+iso/boot/
+
+# Logs e arquivos soltos do QEMU
+*.log
+regs*
+
+# Editores e sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
